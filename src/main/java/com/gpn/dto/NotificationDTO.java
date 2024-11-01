@@ -1,9 +1,9 @@
-package com.gpn.entity;
+package com.gpn.dto;
 
 import lombok.Data;
 
 @Data
-public class GasNotificationRequest {
+public class NotificationDTO {
     private String zipCode;
     private String area;
     private String brand;

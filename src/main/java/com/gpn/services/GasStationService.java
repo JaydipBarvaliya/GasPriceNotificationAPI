@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-public class GasBuddyService {
+public class GasStationService {
 
     private final WebClient webClient;
 
-    public GasBuddyService(WebClient.Builder webClientBuilder) {
+    public GasStationService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://www.gasbuddy.com").build();
     }
 
