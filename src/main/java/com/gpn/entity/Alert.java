@@ -8,12 +8,14 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Station {
+public class Alert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String location;
-    private double price;
+    private int stationId;
+    private String email;
+    private float expectedPrice;
+    private Boolean pushNotification;
+    private int fuelType;
 }

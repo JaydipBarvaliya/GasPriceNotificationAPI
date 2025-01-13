@@ -1,34 +1,59 @@
 package com.gpn.config;
 
-import com.gpn.services.GasStationService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gpn.entity.Alert;
+import com.gpn.repository.AlertRepository;
+import com.gpn.services.GraphQLService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class GasPriceScheduler {
 
-    private final GasStationService gasStationService;
+    private final GraphQLService graphQLService;
     private final JavaMailSender mailSender;
+    private final AlertRepository alertRepository;
 
-    public GasPriceScheduler(GasStationService gasStationService, JavaMailSender mailSender) {
-        this.gasStationService = gasStationService;
+    public GasPriceScheduler(GraphQLService graphQLService, JavaMailSender mailSender, AlertRepository alertRepository) {
+        this.graphQLService = graphQLService;
         this.mailSender = mailSender;
+        this.alertRepository = alertRepository;
     }
 
-    // Scheduled method to run every 5 minutes
-    @Scheduled(fixedRate = 30000) // 100000 ms = 1 minutes
+//    @Scheduled(fixedRate = 5000) // 100000 ms = 1 minutes
     public void fetchGasPricesAndSendEmail() {
         try {
-            // Fetch the gas prices by calling the getStationData method
-            String gasPricesData = gasStationService.findByStationId("12910");
+            List<Alert> all = alertRepository.findAll();
 
-            // Send the email with the fetched data
-            sendEmail("jaydipbarvaliya55@gmail.com", "Gas Price Update", gasPricesData);
+                for(Alert ALert : all) {
 
-            System.out.println("Gas prices fetched and email sent successfully!");
 
+                    String gasStationLiveData = graphQLService.findByStationId(ALert.getStationId());
+
+                    try {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        JsonNode rootNode = objectMapper.readTree(gasStationLiveData);
+                        JsonNode prices = rootNode.at("/data/station/prices");
+
+                        float currentGasPrice = (float)prices.get(ALert.getFuelType()-1).at("/credit/price").asDouble();
+                        float userExpectedPrice     = ALert.getExpectedPrice();
+
+                        if(currentGasPrice <= userExpectedPrice) {
+                            sendEmail("jaydipbarvaliya55@gmail.com", "Gas Price Update", "Current Gas Price: " + currentGasPrice + " Which is lower then your set price " + userExpectedPrice);
+                            System.out.println("Gas prices fetched and email sent successfully!");
+                        }else{
+                            System.out.println("--------------------");
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
         } catch (Exception e) {
             System.err.println("Error fetching gas prices or sending email: " + e.getMessage());
         }
