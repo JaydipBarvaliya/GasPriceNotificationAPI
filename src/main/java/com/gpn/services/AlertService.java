@@ -49,4 +49,13 @@ public class AlertService {
             return false;
         }
     }
+
+    public boolean deleteAllAlert() {
+        try {
+            alertRepository.deleteAll();
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
 }

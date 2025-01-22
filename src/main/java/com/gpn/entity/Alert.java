@@ -12,10 +12,14 @@ public class Alert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private int stationId;
-    private String email;
+    private int fuelType;
     private float expectedPrice;
     private Boolean pushNotification;
-    private int fuelType;
+    private String email;
+    private String line1;
+    private String locality;
+    private String postalCode;
+    private String region;
+    private String name;
 }

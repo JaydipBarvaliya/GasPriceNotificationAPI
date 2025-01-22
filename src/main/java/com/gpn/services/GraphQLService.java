@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gpn.dto.GraphQLBody;
 import com.gpn.dto.GraphQLVars;
-import com.gpn.entity.Alert;
 import com.gpn.repository.AlertRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -162,6 +161,4 @@ public class GraphQLService {
         body.setVariables(new GraphQLVars());
         return body;
     }
-
-
 }

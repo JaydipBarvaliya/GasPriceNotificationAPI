@@ -11,5 +11,4 @@ public class GasPriceNotificationApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(GasPriceNotificationApiApplication.class, args);
     }
-
 }

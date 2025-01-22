@@ -35,8 +35,8 @@ public class GPNController {
     }
 
     @PostMapping(value = "/createAlert", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createNotificationTrigger(@RequestBody Alert ALert) {
-        alertService.save(ALert);
+    public ResponseEntity<String> createNotificationTrigger(@RequestBody Alert alert) {
+        alertService.save(alert);
         return ResponseEntity.ok("Notification Trigger Created Successfully!");
     }
 
@@ -54,7 +54,6 @@ public class GPNController {
 
     @GetMapping(value = "/getBrands", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getBrands() {
-        System.out.println("--------------BrandID Fetching -----------");
         return graphQLService.getBrands();
     }
 
@@ -72,5 +71,15 @@ public class GPNController {
             return ResponseEntity.status(404).body("Alert not found");
         }
     }
-}
 
+
+    @DeleteMapping("/deleteAllAlerts")
+    public ResponseEntity<String> deleteAllAlert() {
+         boolean isDeleted = alertService.deleteAllAlert();
+        if (isDeleted) {
+            return ResponseEntity.ok("All the Alerts have been deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Alerts Deletion failed");
+        }
+     }
+}
