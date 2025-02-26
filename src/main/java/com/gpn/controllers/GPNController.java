@@ -61,11 +61,19 @@ public class GPNController {
     }
 
     @PutMapping("/updateAlert")
-    public ResponseEntity<?> updateAlert(@RequestBody Alert alert) {
+    public ResponseEntity<List<Alert>> updateAlert(@RequestBody Alert alert) {
         logger.info("Called updateAlert with alert: {}", alert);
+
         Alert updatedAlert = alertService.updateAlert(alert);
-        return ResponseEntity.ok(updatedAlert);
+
+        if (updatedAlert != null) {
+            List<Alert> updatedAlerts = alertService.getAlerts(); // Fetch updated alerts list
+            return ResponseEntity.ok(updatedAlerts); // Return updated list
+        } else {
+            return ResponseEntity.status(404).body(null); // Return 404 if update fails
+        }
     }
+
 
     @GetMapping(value = "/getBrands", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getBrands() {
@@ -80,15 +88,19 @@ public class GPNController {
     }
 
     @DeleteMapping("/deleteAlert/{id}")
-    public ResponseEntity<String> deleteAlert(@PathVariable Long id) {
+    public ResponseEntity<List<Alert>> deleteAlert(@PathVariable Long id) {
         logger.info("Called deleteAlert with id: {}", id);
+
         boolean isDeleted = alertService.deleteAlertById(id);
+
         if (isDeleted) {
-            return ResponseEntity.ok("Alert deleted successfully");
+            List<Alert> remainingAlerts = alertService.getAlerts(); // Fetch remaining alerts
+            return ResponseEntity.ok(remainingAlerts); // Return updated list
         } else {
-            return ResponseEntity.status(404).body("Alert not found");
+            return ResponseEntity.status(404).body(null); // Return 404 if alert not found
         }
     }
+
 
     @DeleteMapping("/deleteAllAlerts")
     public ResponseEntity<String> deleteAllAlert() {
