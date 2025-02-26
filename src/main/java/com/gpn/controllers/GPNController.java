@@ -11,7 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GPNController {
@@ -34,24 +36,21 @@ public class GPNController {
     }
 
     @GetMapping(value = "/findByCityOrZipcode", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String findByCityOrZipcode(
-            @RequestHeader("search") String search,
-            @RequestHeader("fuel") int fuel,
-            @RequestHeader("maxAge") int maxAge,
-            @RequestHeader("brandId") String brandId
-    ) throws JsonProcessingException {
-        logger.info("Called findByCityOrZipcode with search: {}, fuel: {}, maxAge: {}, brandId: {}",
-                search, fuel, maxAge, brandId);
-
-        int parsedBrandId = brandId.isEmpty() ? 1 : Integer.parseInt(brandId);
-        return graphQLService.findByCityOrZipcode(search, fuel, maxAge, parsedBrandId);
+    public String findByCityOrZipcode(@RequestParam("search") String search, @RequestParam("fuel") int fuel, @RequestParam("maxAge") int maxAge, @RequestParam(name = "brandId", defaultValue = "1") int brandId ) throws JsonProcessingException {
+        logger.info("Called findByCityOrZipcode with search: {}, fuel: {}, maxAge: {}, brandId: {}", search, fuel, maxAge, brandId);
+        return graphQLService.findByCityOrZipcode(search, fuel, maxAge, brandId);
     }
 
     @PostMapping(value = "/createAlert", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createNotificationTrigger(@RequestBody Alert alert) {
+    public ResponseEntity<Map<String, Object>> createNotificationTrigger(@RequestBody Alert alert) {
+
         logger.info("Called createNotificationTrigger with alert: {}", alert);
         alertService.save(alert);
-        return ResponseEntity.ok("Notification Trigger Created Successfully!");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Notification Trigger Created Successfully!");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getAlertDetails/{stationId}")
