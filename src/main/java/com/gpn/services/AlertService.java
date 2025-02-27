@@ -1,6 +1,6 @@
 package com.gpn.services;
 
-import com.gpn.entity.Alert;
+import com.gpn.entity.Alerts;
 import com.gpn.repository.AlertRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +16,28 @@ public class AlertService {
     }
 
 
-    public Alert updateAlert(Alert updatedAlert) {
-        Alert existingAlert = alertRepository.findByStationId(updatedAlert.getStationId());
+    public Alerts updateAlert(Alerts updatedAlerts) {
+        Alerts existingAlerts = alertRepository.findByStationId(updatedAlerts.getStationId());
 
         // Update fields
-        existingAlert.setExpectedPrice(updatedAlert.getExpectedPrice());
-        existingAlert.setEmail(updatedAlert.getEmail());
-        existingAlert.setFuelType(updatedAlert.getFuelType());
-        existingAlert.setPushNotification(updatedAlert.getPushNotification());
+        existingAlerts.setExpectedPrice(updatedAlerts.getExpectedPrice());
+        existingAlerts.setEmail(updatedAlerts.getEmail());
+        existingAlerts.setFuelType(updatedAlerts.getFuelType());
+        existingAlerts.setPushNotification(updatedAlerts.getPushNotification());
 
         // Save updated notifier
-        return alertRepository.save(existingAlert);
+        return alertRepository.save(existingAlerts);
     }
 
-    public void save(Alert alert) {
-        alertRepository.save(alert);
+    public void save(Alerts alerts) {
+        alertRepository.save(alerts);
     }
 
-    public Alert findByStationId(int stationId) {
+    public Alerts findByStationId(int stationId) {
         return alertRepository.findByStationId(stationId);
     }
 
-    public List<Alert> getAlerts() {
+    public List<Alerts> getAlerts() {
         return alertRepository.findAll();
     }
 

@@ -1,7 +1,7 @@
 package com.gpn.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gpn.entity.Alert;
+import com.gpn.entity.Alerts;
 import com.gpn.services.AlertService;
 import com.gpn.services.GraphQLService;
 import org.slf4j.Logger;
@@ -42,10 +42,10 @@ public class GPNController {
     }
 
     @PostMapping(value = "/createAlert", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> createNotificationTrigger(@RequestBody Alert alert) {
+    public ResponseEntity<Map<String, Object>> createNotificationTrigger(@RequestBody Alerts alerts) {
 
-        logger.info("Called createNotificationTrigger with alert: {}", alert);
-        alertService.save(alert);
+        logger.info("Called createNotificationTrigger with alert: {}", alerts);
+        alertService.save(alerts);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
@@ -56,18 +56,18 @@ public class GPNController {
     @GetMapping("/getAlertDetails/{stationId}")
     public ResponseEntity<?> getAlertDetails(@PathVariable int stationId) {
         logger.info("Called getAlertDetails with stationId: {}", stationId);
-        Alert alert = alertService.findByStationId(stationId);
-        return ResponseEntity.ok(alert);
+        Alerts alerts = alertService.findByStationId(stationId);
+        return ResponseEntity.ok(alerts);
     }
 
     @PutMapping("/updateAlert")
-    public ResponseEntity<List<Alert>> updateAlert(@RequestBody Alert alert) {
-        logger.info("Called updateAlert with alert: {}", alert);
+    public ResponseEntity<List<Alerts>> updateAlert(@RequestBody Alerts alerts) {
+        logger.info("Called updateAlert with alert: {}", alerts);
 
-        Alert updatedAlert = alertService.updateAlert(alert);
+        Alerts updatedAlert = alertService.updateAlert(alerts);
 
         if (updatedAlert != null) {
-            List<Alert> updatedAlerts = alertService.getAlerts(); // Fetch updated alerts list
+            List<Alerts> updatedAlerts = alertService.getAlerts(); // Fetch updated alerts list
             return ResponseEntity.ok(updatedAlerts); // Return updated list
         } else {
             return ResponseEntity.status(404).body(null); // Return 404 if update fails
@@ -82,19 +82,19 @@ public class GPNController {
     }
 
     @GetMapping(value = "/getAlerts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Alert> getAlerts() {
+    public List<Alerts> getAlerts() {
         logger.info("Called getAlerts endpoint");
         return alertService.getAlerts();
     }
 
     @DeleteMapping("/deleteAlert/{id}")
-    public ResponseEntity<List<Alert>> deleteAlert(@PathVariable Long id) {
+    public ResponseEntity<List<Alerts>> deleteAlert(@PathVariable Long id) {
         logger.info("Called deleteAlert with id: {}", id);
 
         boolean isDeleted = alertService.deleteAlertById(id);
 
         if (isDeleted) {
-            List<Alert> remainingAlerts = alertService.getAlerts(); // Fetch remaining alerts
+            List<Alerts> remainingAlerts = alertService.getAlerts(); // Fetch remaining alerts
             return ResponseEntity.ok(remainingAlerts); // Return updated list
         } else {
             return ResponseEntity.status(404).body(null); // Return 404 if alert not found

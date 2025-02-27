@@ -2,10 +2,9 @@ package com.gpn.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gpn.entity.Alert;
+import com.gpn.entity.Alerts;
 import com.gpn.repository.AlertRepository;
 import com.gpn.services.GraphQLService;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
@@ -27,23 +26,23 @@ public class Scheduler {
 //    @Scheduled(fixedRate = 5000) // 100000 ms = 1 minutes
     public void fetchGasPricesAndSendEmail() {
         try {
-            List<Alert> all = alertRepository.findAll();
+            List<Alerts> all = alertRepository.findAll();
 
-                for(Alert alert : all) {
+                for(Alerts alerts : all) {
 
 
-                    String gasStationLiveData = graphQLService.findByStationId(alert.getStationId());
+                    String gasStationLiveData = graphQLService.findByStationId(alerts.getStationId());
 
                     try {
                         ObjectMapper objectMapper = new ObjectMapper();
                         JsonNode rootNode = objectMapper.readTree(gasStationLiveData);
                         JsonNode prices = rootNode.at("/data/station/prices");
 
-                        float currentGasPrice = (float)prices.get(alert.getFuelType()-1).at("/credit/price").asDouble();
-                        float userExpectedPrice  = alert.getExpectedPrice();
+                        float currentGasPrice = (float)prices.get(alerts.getFuelType()-1).at("/credit/price").asDouble();
+                        float userExpectedPrice  = alerts.getExpectedPrice();
 
                         if(currentGasPrice <= userExpectedPrice) {
-//                            sendEmail(alert.getEmail(), "Gas Price Update At" + "", "Current Gas Price: " + currentGasPrice + " Which is lower then your set price " + userExpectedPrice);
+
                             System.out.println("Gas prices fetched and email sent successfully!");
                         }else{
                             System.out.println("--------------------");
@@ -59,12 +58,15 @@ public class Scheduler {
         }
     }
 
-    // Method to send an email
-    public void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
-    }
+
+// sendEmail(alert.getEmail(), "Gas Price Update At" + "", "Current Gas Price: " + currentGasPrice + " Which is lower than your set price " + userExpectedPrice);
+
+// Method to send an email
+//    public void sendEmail(String to, String subject, String text) {
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setTo(to);
+//        message.setSubject(subject);
+//        message.setText(text);
+//        mailSender.send(message);
+//    }
 }
