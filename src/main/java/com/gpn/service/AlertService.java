@@ -1,4 +1,4 @@
-package com.gpn.services;
+package com.gpn.service;
 
 import com.gpn.entity.Alerts;
 import com.gpn.repository.AlertRepository;

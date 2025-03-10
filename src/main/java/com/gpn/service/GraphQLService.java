@@ -1,4 +1,4 @@
-package com.gpn.services;
+package com.gpn.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,38 +38,39 @@ public class GraphQLService {
 
     public String findByCityOrZipcode(String search, int fuel, int maxAge, int brandId) throws JsonProcessingException {
 
-        String query = "query LocationBySearchTerm($search: String, $fuel: Int, $maxAge: Int, $brandId: Int) {\n" +
-                "                locationBySearchTerm(search: $search) {\n" +
-                "                    countryCode\n" +
-                "                    displayName\n" +
-                "                    latitude\n" +
-                "                    longitude\n" +
-                "                    regionCode\n" +
-                "                    stations(brandId: $brandId, fuel: $fuel, maxAge: $maxAge) {\n" +
-                "                        count\n" +
-                "                        results {\n" +
-                "                            id\n" +
-                "                            name\n" +
-                "                            address {\n" +
-                "                                line1\n" +
-                "                                locality\n" +
-                "                                postalCode\n" +
-                "                                region\n" +
-                "                            }\n" +
-                "                            prices {\n" +
-                "                                cash {\n" +
-                "                                    price\n" +
-                "                                    formattedPrice\n" +
-                "                                }\n" +
-                "                                credit {\n" +
-                "                                    price\n" +
-                "                                    formattedPrice\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                }\n" +
-                "            }";
+        String query = """
+                query LocationBySearchTerm($search: String, $fuel: Int, $maxAge: Int, $brandId: Int) {
+                                locationBySearchTerm(search: $search) {
+                                    countryCode
+                                    displayName
+                                    latitude
+                                    longitude
+                                    regionCode
+                                    stations(brandId: $brandId, fuel: $fuel, maxAge: $maxAge) {
+                                        count
+                                        results {
+                                            id
+                                            name
+                                            address {
+                                                line1
+                                                locality
+                                                postalCode
+                                                region
+                                            }
+                                            prices {
+                                                cash {
+                                                    price
+                                                    formattedPrice
+                                                }
+                                                credit {
+                                                    price
+                                                    formattedPrice
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }""";
 
         String listOfGasStations = webClient.post()
                 .uri("/graphql")
@@ -103,23 +104,23 @@ public class GraphQLService {
     }
 
     public String getBrands(){
-        String query = "query Brands {\n" +
-                "    brands {\n" +
-                "      brandId\n" +
-                "      name\n" +
-                "    }\n" +
-                "  }";
+        String query = """
+                query Brands {
+                    brands {
+                      brandId
+                      name
+                    }
+                  }""";
 
 
-        String listOfBrands = webClient.post()
+        // Serialize the GraphQLRequest object to JSON
+        return webClient.post()
                 .uri("/graphql")
                 .header("Content-Type", "application/json")
                 .bodyValue(formFetchAllBrandsXYZ(query, "Brands")) // Serialize the GraphQLRequest object to JSON
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
-        return listOfBrands;
     }
 
     public GraphQLBody formFindByZipcodeRequestBodyXYZ(String query, String search, int fuel, int maxAge, int brandId, String operationName) {
