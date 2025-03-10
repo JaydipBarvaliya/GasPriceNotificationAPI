@@ -2,8 +2,8 @@ package com.gpn.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gpn.entity.Alerts;
-import com.gpn.services.AlertService;
-import com.gpn.services.GraphQLService;
+import com.gpn.service.AlertService;
+import com.gpn.service.GraphQLService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class GPNController {
     }
 
     @PostMapping(value = "/createAlert", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> createNotificationTrigger(@RequestBody Alerts alerts) {
+    public ResponseEntity<Map<String, Object>> createAlert(@RequestBody Alerts alerts) {
 
         logger.info("Called createNotificationTrigger with alert: {}", alerts);
         alertService.save(alerts);
@@ -73,7 +73,6 @@ public class GPNController {
             return ResponseEntity.status(404).body(null); // Return 404 if update fails
         }
     }
-
 
     @GetMapping(value = "/getBrands", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getBrands() {
