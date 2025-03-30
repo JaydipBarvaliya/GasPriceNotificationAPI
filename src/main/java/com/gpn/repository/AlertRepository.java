@@ -1,6 +1,6 @@
 package com.gpn.repository;
 
-import com.gpn.entity.Alerts;
+import com.gpn.entity.Alert;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AlertRepository extends JpaRepository<Alerts, Long>{
+public interface AlertRepository extends JpaRepository<Alert, Long>{
 
-    @Query("SELECT t.stationId FROM Alerts t")
+    @Query("SELECT t.stationId FROM Alert t")
     List<String> findAllStationIds();
 
-    Alerts findByStationId(int aLong);
+    Alert findByStationId(int aLong);
 }
