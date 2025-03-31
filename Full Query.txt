@@ -1,0 +1,143 @@
+ query Brands {
+    brands {
+      brandId
+      name
+    }
+  }
+  
+  
+  {
+  "operationName": "LocationBySearchTerm",
+  "variables": {
+    "brandId": 100,
+    "fuel": 1,
+    "maxAge": 0,
+    "search": "mississauga"
+  },
+  "query": "query LocationBySearchTerm($brandId: Int, $cursor: String, $fuel: Int, $lat: Float, $lng: Float, $maxAge: Int, $search: String) {\n  locationBySearchTerm(\n    lat: $lat\n    lng: $lng\n    search: $search\n    priority: \"locality\"\n  ) {\n    countryCode\n    displayName\n    latitude\n    longitude\n    regionCode\n    stations(\n      brandId: $brandId\n      cursor: $cursor\n      fuel: $fuel\n      lat: $lat\n      lng: $lng\n      maxAge: $maxAge\n      priority: \"locality\"\n    ) {\n      count\n      cursor {\n        next\n        __typename\n      }\n      results {\n        address {\n          country\n          line1\n          line2\n          locality\n          postalCode\n          region\n          __typename\n        }\n        badges {\n          badgeId\n          callToAction\n          campaignId\n          clickTrackingUrl\n          description\n          detailsImageUrl\n          detailsImpressionTrackingUrls\n          imageUrl\n          impressionTrackingUrls\n          targetUrl\n          title\n          __typename\n        }\n        brands {\n          brandId\n          brandingType\n          imageUrl\n          name\n          __typename\n        }\n        distance\n        emergencyStatus {\n          hasDiesel {\n            nickname\n            reportStatus\n            updateDate\n            __typename\n          }\n          hasGas {\n            nickname\n            reportStatus\n            updateDate\n            __typename\n          }\n          hasPower {\n            nickname\n            reportStatus\n            updateDate\n            __typename\n          }\n          __typename\n        }\n        enterprise\n        fuels\n        hasActiveOutage\n        id\n        name\n        offers {\n          discounts {\n            grades\n            highlight\n            pwgbDiscount\n            receiptDiscount\n            __typename\n          }\n          highlight\n          id\n          types\n          use\n          __typename\n        }\n        payStatus {\n          isPayAvailable\n          __typename\n        }\n        prices {\n          cash {\n            nickname\n            postedTime\n            price\n            formattedPrice\n            __typename\n          }\n          credit {\n            nickname\n            postedTime\n            price\n            formattedPrice\n            __typename\n          }\n          discount\n          fuelProduct\n          __typename\n        }\n        priceUnit\n        ratingsCount\n        starRating\n        isFuelmanSite\n        __typename\n      }\n      __typename\n    }\n    trends {\n      areaName\n      country\n      today\n      todayLow\n      trend\n      __typename\n    }\n    __typename\n  }\n}"
+}
+
+
+
+
+
+
+
+
+query LocationBySearchTerm(
+    $brandId: Int,
+    $cursor: String,
+    $fuel: Int,
+    $lat: Float,
+    $lng: Float,
+    $maxAge: Int,
+    $search: String
+  ) {
+    locationBySearchTerm(lat: $lat, lng: $lng, search: $search, priority: "locality") {
+      countryCode
+      displayName
+      latitude
+      longitude
+      regionCode
+      stations(brandId: $brandId, cursor: $cursor, fuel: $fuel, lat: $lat, lng: $lng, maxAge: $maxAge, priority: "locality") {
+        count
+        cursor {
+          next
+        }
+        results {
+          address {
+            country
+            line1
+            line2
+            locality
+            postalCode
+            region
+          }
+          badges {
+            badgeId,
+            callToAction,
+            campaignId,
+            clickTrackingUrl,
+            description,
+            detailsImageUrl,
+            detailsImpressionTrackingUrls,
+            imageUrl,
+            impressionTrackingUrls,
+            targetUrl,
+            title,
+          }
+          brands {
+            brandId
+            brandingType
+            imageUrl
+            name
+          }
+          distance
+          emergencyStatus {
+            hasDiesel {
+              nickname
+              reportStatus
+              updateDate
+            }
+            hasGas {
+              nickname
+              reportStatus
+              updateDate
+            }
+            hasPower {
+              nickname
+              reportStatus
+              updateDate
+            }
+          }
+          enterprise
+          fuels
+          hasActiveOutage
+          id
+          name
+          offers {
+            discounts {
+              grades
+              highlight
+              pwgbDiscount
+              receiptDiscount
+            }
+            highlight
+            id
+            types
+            use
+          }
+          payStatus {
+            isPayAvailable
+          }
+          prices {
+            cash {
+              nickname
+              postedTime
+              price
+              formattedPrice
+            }
+            credit {
+              nickname
+              postedTime
+              price
+              formattedPrice
+            }
+            discount
+            fuelProduct
+          }
+          priceUnit
+          ratingsCount
+          starRating
+          isFuelmanSite
+        }
+      }
+      trends {
+        areaName
+        country
+        today
+        todayLow
+        trend
+      }
+    }
+  }
