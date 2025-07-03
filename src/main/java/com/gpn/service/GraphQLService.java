@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gpn.dto.GraphQLBody;
+import com.gpn.dto.GraphQLBodyWithoutVar;
 import com.gpn.dto.GraphQLVars;
 import com.gpn.repository.AlertRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GraphQLService {
@@ -30,10 +32,23 @@ public class GraphQLService {
         return webClient.post()
                 .uri("/graphql")
                 .header("Content-Type", "application/json")
-                .bodyValue(formFindByStationIdRequestBodyXYZ(query, stationId, "GetStation")) // Serialize the GraphQLRequest object to JSON
+                .bodyValue(formFindByStationIdGraphQLBody(query, stationId, "GetStation")) // Serialize the GraphQLRequest object to JSON
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    public GraphQLBody formFindByStationIdGraphQLBody(String query, int stationId, String operationName) {
+
+        GraphQLBody body = new GraphQLBody();
+        body.setOperationName(operationName);
+        body.setQuery(query);
+
+        GraphQLVars vars = new GraphQLVars();
+        vars.setId(stationId);
+
+        body.setVariables(vars);
+        return body;
     }
 
     public String findByCityOrZipcode(String search, int fuel, int maxAge, int brandId) throws JsonProcessingException {
@@ -75,7 +90,7 @@ public class GraphQLService {
         String listOfGasStations = webClient.post()
                 .uri("/graphql")
                 .header("Content-Type", "application/json")
-                .bodyValue(formFindByZipcodeRequestBodyXYZ(query, search, fuel, maxAge, brandId, "LocationBySearchTerm")) // Serialize the GraphQLRequest object to JSON
+                .bodyValue(formFindByZipcodeRequestGraphQLBody(query, search, fuel, maxAge, brandId, "LocationBySearchTerm")) // Serialize the GraphQLRequest object to JSON
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
@@ -89,9 +104,9 @@ public class GraphQLService {
         if (resultsNode.isArray()) {
             ArrayNode resultsArray = (ArrayNode) resultsNode;
             for (JsonNode gasStation : resultsArray) {
-                if(triggers.contains(gasStation.get("id").asText())){
+                if (triggers.contains(gasStation.get("id").asText())) {
                     ((ObjectNode) gasStation).put("hasTriggerCreated", true);
-                }else{
+                } else {
                     ((ObjectNode) gasStation).put("hasTriggerCreated", false);
                 }
 
@@ -103,27 +118,7 @@ public class GraphQLService {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
     }
 
-    public String getBrands(){
-        String query = """
-                query Brands {
-                    brands {
-                      brandId
-                      name
-                    }
-                  }""";
-
-
-        // Serialize the GraphQLRequest object to JSON
-        return webClient.post()
-                .uri("/graphql")
-                .header("Content-Type", "application/json")
-                .bodyValue(formFetchAllBrandsXYZ(query, "Brands")) // Serialize the GraphQLRequest object to JSON
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-    }
-
-    public GraphQLBody formFindByZipcodeRequestBodyXYZ(String query, String search, int fuel, int maxAge, int brandId, String operationName) {
+    public GraphQLBody formFindByZipcodeRequestGraphQLBody(String query, String search, int fuel, int maxAge, int brandId, String operationName) {
 
         GraphQLBody body = new GraphQLBody();
         body.setOperationName(operationName);
@@ -133,27 +128,50 @@ public class GraphQLService {
         vars.setSearch(search);
         vars.setFuel(fuel);
         vars.setMaxAge(maxAge);
-        if(brandId != 1){
+        if (brandId != 1) {
             vars.setBrandId(brandId);
         }
         body.setVariables(vars);
         return body;
     }
 
-    public GraphQLBody formFindByStationIdRequestBodyXYZ(String query, int stationId, String operationName) {
+    public String getBrands() {
+        String query = """
+                  query Brands {
+                    brands {
+                      brandId
+                      name
+                    }
+                  }
+                """;
 
-        GraphQLBody body = new GraphQLBody();
+
+        // Serialize the GraphQLRequest object to JSON
+        return webClient.post()
+                .uri("/graphql")
+                .header("Content-Type", "application/json")
+                .bodyValue(withoutVar(query, "Brands"))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
+    public GraphQLBodyWithoutVar withoutVar(String query, String operationName) {
+
+        GraphQLBodyWithoutVar body = new GraphQLBodyWithoutVar();
         body.setOperationName(operationName);
         body.setQuery(query);
-
-        GraphQLVars vars = new GraphQLVars();
-        vars.setId(stationId);
-
-        body.setVariables(vars);
         return body;
     }
 
-    public GraphQLBody formFetchAllBrandsXYZ(String query, String operationName) {
+    public Map<String, Object> formBrandsPayload(String query) {
+        return Map.of(
+                "operationName", "Brands",
+                "query",          query
+        );
+    }
+
+    public GraphQLBody formFetchAllBrandsGraphQLBody(String query, String operationName) {
 
         GraphQLBody body = new GraphQLBody();
         body.setOperationName(operationName);
@@ -162,4 +180,6 @@ public class GraphQLService {
         body.setVariables(new GraphQLVars());
         return body;
     }
+
+
 }

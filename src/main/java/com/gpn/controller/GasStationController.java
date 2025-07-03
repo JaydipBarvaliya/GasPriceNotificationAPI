@@ -1,6 +1,7 @@
 package com.gpn.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gpn.service.FetchBrandsService;
 import com.gpn.service.GraphQLService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,12 @@ public class GasStationController {
     private static final Logger logger = LoggerFactory.getLogger(GasStationController.class);
 
     private final GraphQLService graphQLService;
+    private  final FetchBrandsService fetchBrandsService;
 
     @Autowired
-    public GasStationController(GraphQLService graphQLService) {
+    public GasStationController(GraphQLService graphQLService, FetchBrandsService fetchBrandsService) {
         this.graphQLService = graphQLService;
+        this.fetchBrandsService = fetchBrandsService;
     }
 
     @GetMapping(value = "/findByStationId", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,9 +39,9 @@ public class GasStationController {
     }
 
     @GetMapping(value = "/getBrands", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getBrands() {
+    public String getBrands() throws JsonProcessingException {
         logger.info("Called getBrands endpoint");
-        return graphQLService.getBrands();
+        return fetchBrandsService.getBrands();
     }
 
 
